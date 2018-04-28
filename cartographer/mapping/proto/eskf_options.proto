@@ -1,0 +1,36 @@
+syntax = "proto2";
+
+package cartographer.mapping.proto;
+
+message ESKFOptions {
+    optional double imu_frequency = 1;
+    optional string imu_frame = 2;
+    optional string robot_frame = 3;
+    optional bool   imu_enabled = 4;
+    optional bool   imu_has_quaternion = 5;
+    optional bool   smooth_enabled = 6;
+    optional int32  smooth_buffer_size = 7;
+    optional string smooth_type = 8;
+    
+    optional double initial_x = 9;
+    optional double initial_y = 10;
+    optional double initial_z = 11;
+    optional double initial_roll = 12;
+    optional double initial_pitch = 13;
+    optional double initial_yaw = 14;
+
+    optional double sigma_accelerometer = 15;
+    optional double sigma_gyroscope = 16;
+    optional double sigma_bias_accelerometer = 17;
+    optional double sigma_bias_gyroscope = 18;
+
+    optional double gravity = 19;
+
+    optional double initial_bias_accelerometer_x = 20;
+    optional double initial_bias_accelerometer_y = 21;
+    optional double initial_bias_accelerometer_z = 22;
+
+    optional int32 accelerometer_queue_size = 23;
+    optional bool  imu_transform = 24;
+
+}
