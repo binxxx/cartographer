@@ -41,7 +41,7 @@ std::unique_ptr<ESKFLocalTrajectoryBuilder::InsertionResult>
 ESKFLocalTrajectoryBuilder::AddRangeData(const common::Time time,
                                          const sensor::RangeData& range_data) {
   // return nullptr;
-  // std::cout << "ESKFLocalTrajectoryBuilder::AddRangeData()" << std::endl;
+  std::cout << "ESKFLocalTrajectoryBuilder::AddRangeData()" << std::endl;
 
   if (eskf_ == nullptr) {
     LOG(INFO) << "IMU not yet initialized.";

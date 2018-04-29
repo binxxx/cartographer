@@ -63,7 +63,7 @@ class GlobalTrajectoryBuilder
   void AddRangefinderData(const common::Time time,
                           const Eigen::Vector3f& origin,
                           const sensor::PointCloud& ranges) override {
-    // std::cout << "GlobalTrajectoryBuilder::AddRangefinderData()" << ranges.size() << std::endl;
+    std::cout << "GlobalTrajectoryBuilder::AddRangefinderData()" << ranges.size() << std::endl;
     std::unique_ptr<typename LocalTrajectoryBuilder::InsertionResult>
         insertion_result = local_trajectory_builder_.AddRangeData(
             time, sensor::RangeData{origin, ranges, {}});
@@ -80,33 +80,33 @@ class GlobalTrajectoryBuilder
         insertion_result->constant_data, insertion_result->pose_observation,
         trajectory_id_, insertion_result->insertion_submaps);
     */
-    if (insertion_result->num_scans > options_.scans_per_accumulation()) {
+    if (insertion_result->num_scans >= options_.scans_per_accumulation()) {
       sparse_pose_graph_->AddScan(
         insertion_result->constant_data, insertion_result->pose_observation,
         trajectory_id_, insertion_result->insertion_submaps);
     }
-    sparse_pose_graph_offline_->AddScan(
-        insertion_result->constant_data_mini, insertion_result->pose_observation,
-        trajectory_id_, insertion_result->insertion_submaps);
+    // sparse_pose_graph_offline_->AddScan(
+        // insertion_result->constant_data_mini, insertion_result->pose_observation,
+        // trajectory_id_, insertion_result->insertion_submaps);
   }
 
   void AddSensorData(const sensor::ImuData& imu_data) override {
-    // std::cout << "GlobalTrajectoryBuilder::AddImuData()" << std::endl;
+    std::cout << "GlobalTrajectoryBuilder::AddImuData()" << std::endl;
     local_trajectory_builder_.AddImuData(imu_data);
     sparse_pose_graph_->AddImuData(trajectory_id_, imu_data);
-    sparse_pose_graph_offline_->AddImuData(trajectory_id_, imu_data);
+    // sparse_pose_graph_offline_->AddImuData(trajectory_id_, imu_data);
   }
 
   void AddSensorData(const sensor::OdometryData& odometry_data) override {
     local_trajectory_builder_.AddOdometerData(odometry_data);
     sparse_pose_graph_->AddOdometerData(trajectory_id_, odometry_data);
-    sparse_pose_graph_offline_->AddOdometerData(trajectory_id_, odometry_data);
+    // sparse_pose_graph_offline_->AddOdometerData(trajectory_id_, odometry_data);
   }
 
   void AddSensorData(
       const sensor::FixedFramePoseData& fixed_frame_pose) override {
     sparse_pose_graph_->AddFixedFramePoseData(trajectory_id_, fixed_frame_pose);
-    sparse_pose_graph_offline_->AddFixedFramePoseData(trajectory_id_, fixed_frame_pose);
+    // sparse_pose_graph_offline_->AddFixedFramePoseData(trajectory_id_, fixed_frame_pose);
   }
 
  private:
