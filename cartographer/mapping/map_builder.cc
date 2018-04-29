@@ -62,12 +62,20 @@ MapBuilder::MapBuilder(const proto::MapBuilderOptions& options)
     sparse_pose_graph_2d_ = common::make_unique<mapping_2d::SparsePoseGraph>(
         options_.sparse_pose_graph_options(), &thread_pool_);
     sparse_pose_graph_ = sparse_pose_graph_2d_.get();
+    
+    sparse_pose_graph_2d_offline_ = common::make_unique<mapping_2d::SparsePoseGraph>(
+        options_.sparse_pose_graph_options(), &thread_pool_);
+    sparse_pose_graph_offline_ = sparse_pose_graph_2d_offline_.get();
   }
   if (options.use_trajectory_builder_3d() || 
       options.use_trajectory_builder_3d_eskf()) {
     sparse_pose_graph_3d_ = common::make_unique<mapping_3d::SparsePoseGraph>(
         options_.sparse_pose_graph_options(), &thread_pool_);
     sparse_pose_graph_ = sparse_pose_graph_3d_.get();
+
+    sparse_pose_graph_3d_offline_ = common::make_unique<mapping_3d::SparsePoseGraph>(
+        options_.sparse_pose_graph_options(), &thread_pool_);
+    sparse_pose_graph_offline_ = sparse_pose_graph_3d_offline_.get();
   }
 }
 
@@ -101,6 +109,7 @@ int MapBuilder::AddTrajectoryBuilder(
                 mapping_3d::SparsePoseGraph>>(
                 trajectory_options.trajectory_builder_3d_eskf_options(),
                 trajectory_id, sparse_pose_graph_3d_.get(),
+                sparse_pose_graph_3d_offline_.get(),
                 &thread_pool_)));
 
   } else {
@@ -255,6 +264,8 @@ int MapBuilder::num_trajectory_builders() const {
 }
 
 SparsePoseGraph* MapBuilder::sparse_pose_graph() { return sparse_pose_graph_; }
+
+SparsePoseGraph* MapBuilder::sparse_pose_graph_offline() { return sparse_pose_graph_offline_; }
 
 }  // namespace mapping
 }  // namespace cartographer

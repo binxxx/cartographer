@@ -29,6 +29,10 @@ class ESKFLocalTrajectoryBuilder {
     std::shared_ptr<const mapping::TrajectoryNode::Data> constant_data;
     transform::Rigid3d pose_observation;
     std::vector<std::shared_ptr<const Submap>> insertion_submaps;
+
+    // add new data type
+    std::shared_ptr<const mapping::TrajectoryNode::Data> constant_data_mini;
+    int num_scans;
   };
   explicit ESKFLocalTrajectoryBuilder(
       const proto::ESKFLocalTrajectoryBuilderOptions& options, 
@@ -50,10 +54,12 @@ class ESKFLocalTrajectoryBuilder {
 
  private:
   std::unique_ptr<InsertionResult> AddAccumulatedRangeData(
-      common::Time time, const sensor::RangeData& range_data_in_tracking);
+      common::Time time, const sensor::RangeData& range_data_in_tracking,
+      const sensor::RangeData& single_range_data);
 
   std::unique_ptr<InsertionResult> InsertIntoSubmap(
       common::Time time, const sensor::RangeData& range_data_in_tracking,
+      const sensor::RangeData& single_range_data,
       const Eigen::Quaterniond& gravity_alignment,
       const sensor::PointCloud& high_resolution_point_cloud,
       const sensor::PointCloud& low_resolution_point_cloud,

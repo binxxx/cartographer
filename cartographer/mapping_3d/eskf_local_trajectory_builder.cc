@@ -191,16 +191,22 @@ ESKFLocalTrajectoryBuilder::AddRangeData(const common::Time time,
   if (num_accumulated_ >= options_.scans_per_accumulation()) {
     num_accumulated_ = 0;
     // Accumulated range data in the latest tracking frame
-    return AddAccumulatedRangeData(
-        time, sensor::TransformRangeData(accumulated_range_data_,
-                                         tracking_delta.inverse()));
+    // return AddAccumulatedRangeData(
+    //     time, sensor::TransformRangeData(accumulated_range_data_,
+    //                                      tracking_delta.inverse()));
   }
-  return nullptr;
+
+  return AddAccumulatedRangeData(
+        time, sensor::TransformRangeData(accumulated_range_data_,
+                                         tracking_delta.inverse()),
+        sensor::TransformRangeData(range_data_in_first_tracking, tracking_delta.inverse()));  
+  // return nullptr;
 }
 
 std::unique_ptr<ESKFLocalTrajectoryBuilder::InsertionResult>
 ESKFLocalTrajectoryBuilder::AddAccumulatedRangeData(
-    const common::Time time, const sensor::RangeData& range_data_in_tracking) {
+    const common::Time time, const sensor::RangeData& range_data_in_tracking,
+    const sensor::RangeData& single_range_data) {
   const sensor::RangeData filtered_range_data = {
       range_data_in_tracking.origin,
       sensor::VoxelFiltered(range_data_in_tracking.returns,
@@ -284,7 +290,7 @@ ESKFLocalTrajectoryBuilder::AddAccumulatedRangeData(
       pose_estimate.rotation().cast<double>();
 
   // std::cout << "Inserting into submap !!!!!!!!!!!!!!!!" << std::endl;
-  return InsertIntoSubmap(time, filtered_range_data, gravity_alignment,
+  return InsertIntoSubmap(time, filtered_range_data, single_range_data, gravity_alignment,
                           // filtered_point_cloud_in_tracking,
                           filtered_range_data.returns,
                           low_resolution_point_cloud_in_tracking,
@@ -319,6 +325,7 @@ transform::Rigid3d ESKFLocalTrajectoryBuilder::GetMatchingLocalPose() {
 std::unique_ptr<ESKFLocalTrajectoryBuilder::InsertionResult>
 ESKFLocalTrajectoryBuilder::InsertIntoSubmap(
     const common::Time time, const sensor::RangeData& range_data_in_tracking,
+    const sensor::RangeData& single_range_data,
     const Eigen::Quaterniond& gravity_alignment,
     const sensor::PointCloud& high_resolution_point_cloud,
     const sensor::PointCloud& low_resolution_point_cloud,
@@ -352,7 +359,15 @@ ESKFLocalTrajectoryBuilder::InsertIntoSubmap(
               {},  // 'filtered_point_cloud' is only used in 2D.
               high_resolution_point_cloud,
               low_resolution_point_cloud}),
-      pose_observation, std::move(insertion_submaps)});
+      pose_observation, std::move(insertion_submaps),
+      std::make_shared<const mapping::TrajectoryNode::Data>(
+            mapping::TrajectoryNode::Data{
+                time,
+                sensor::Compress(single_range_data),
+                gravity_alignment,
+                {},  // 'filtered_point_cloud' is only used in 2D.
+                high_resolution_point_cloud,
+                low_resolution_point_cloud}), num_accumulated_});
 }
 
 }  // namespace mapping_3d
