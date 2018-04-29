@@ -51,8 +51,14 @@ class ESKFLocalTrajectoryBuilder {
   std::shared_ptr<Submap> GetMatchingSubmap();
   transform::Rigid3d GetMatchingLocalPose();
 
+  /*********************************************************/
+  std::unique_ptr<InsertionResult> AddRangeDataMini(common::Time time,
+    const sensor::RangeData& range_data);
+
 
  private:
+  // transform::Rigid3d pose_estimate_copy;
+  // Eigen::Quaterniond gravity_alignment_copy;
   std::unique_ptr<InsertionResult> AddAccumulatedRangeData(
       common::Time time, const sensor::RangeData& range_data_in_tracking);
   // std::unique_ptr<InsertionResult> AddAccumulatedRangeData(

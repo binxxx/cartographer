@@ -203,6 +203,41 @@ ESKFLocalTrajectoryBuilder::AddRangeData(const common::Time time,
   return nullptr;
 }
 
+/************************************************************/
+
+std::unique_ptr<ESKFLocalTrajectoryBuilder::InsertionResult>
+ESKFLocalTrajectoryBuilder::AddRangeDataMini(const common::Time time,
+                                         const sensor::RangeData& range_data) {
+
+
+  const transform::Rigid3f tracking_delta = 
+    first_pose_estimate_.inverse() * 
+    eskf_->GetLatestPose().cast<float>();
+  // std::cout << "eskf latest pose:" << eskf_->GetLatestPose().translation() << std::endl;
+  const sensor::RangeData range_data_in_first_tracking =
+      sensor::TransformRangeData(range_data, tracking_delta);
+
+  std::unique_ptr<ESKFLocalTrajectoryBuilder::InsertionResult> 
+  tmp = AddAccumulatedRangeData(
+    time, sensor::TransformRangeData(accumulated_range_data_,
+                                         tracking_delta.inverse()));
+
+  return std::unique_ptr<InsertionResult>(new InsertionResult{
+
+      std::make_shared<const mapping::TrajectoryNode::Data>(
+          mapping::TrajectoryNode::Data{
+              tmp->constant_data->time,
+              sensor::Compress(sensor::TransformRangeData(range_data_in_first_tracking,
+                                         tracking_delta.inverse())),
+              tmp->constant_data->gravity_alignment,
+              {},  // 'filtered_point_cloud' is only used in 2D.
+              tmp->constant_data->high_resolution_point_cloud,
+              tmp->constant_data->low_resolution_point_cloud}),
+      tmp->pose_observation, tmp->insertion_submaps});  
+}
+
+/************************************************************/
+
 std::unique_ptr<ESKFLocalTrajectoryBuilder::InsertionResult>
 ESKFLocalTrajectoryBuilder::AddAccumulatedRangeData(
     const common::Time time, const sensor::RangeData& range_data_in_tracking
