@@ -102,17 +102,24 @@ class GlobalTrajectoryBuilder
         return;
       }
 
-      if (insertion_result->num_scans >= 20)
-      {
-        sparse_pose_graph_->AddScan(
+      sparse_pose_graph_->AddScan(
           insertion_result->constant_data, insertion_result->pose_observation,
           trajectory_id_, insertion_result->insertion_submaps);
-      }
-
-      // std::cout << "Add Scan to SparsePoseGraph" << std::endl;
       sparse_pose_graph_offline_->AddScan(
-          insertion_result->constant_data_mini, insertion_result->pose_observation,
-          trajectory_id_, insertion_result->insertion_submaps);
+          insertion_result->constant_data, insertion_result->pose_observation,
+          trajectory_id_, insertion_result->insertion_submaps);      
+
+      // if (insertion_result->num_scans >= 20)
+      // {
+      //   sparse_pose_graph_->AddScan(
+      //     insertion_result->constant_data, insertion_result->pose_observation,
+      //     trajectory_id_, insertion_result->insertion_submaps);
+      // }
+
+      // // std::cout << "Add Scan to SparsePoseGraph" << std::endl;
+      // sparse_pose_graph_offline_->AddScan(
+      //     insertion_result->constant_data_mini, insertion_result->pose_observation,
+      //     trajectory_id_, insertion_result->insertion_submaps);
     }
   }
 
