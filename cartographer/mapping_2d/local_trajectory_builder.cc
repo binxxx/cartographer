@@ -199,7 +199,16 @@ LocalTrajectoryBuilder::AddAccumulatedRangeData(
               {},  // 'high_resolution_point_cloud' is only used in 3D.
               {},  // 'low_resolution_point_cloud' is only used in 3D.
           }),
-      pose_estimate, std::move(insertion_submaps)});
+      std::make_shared<const mapping::TrajectoryNode::Data>(
+          mapping::TrajectoryNode::Data{
+              time,
+              {},  // 'range_data' is only used in 3D.
+              gravity_alignment.rotation(),
+              filtered_gravity_aligned_point_cloud,
+              {},  // 'high_resolution_point_cloud' is only used in 3D.
+              {},  // 'low_resolution_point_cloud' is only used in 3D.
+          }),
+      pose_estimate, std::move(insertion_submaps), 0});
 }
 
 const mapping::PoseEstimate& LocalTrajectoryBuilder::pose_estimate() const {

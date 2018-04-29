@@ -87,14 +87,18 @@ class MapBuilder {
   int num_trajectory_builders() const;
 
   mapping::SparsePoseGraph* sparse_pose_graph();
+  mapping::SparsePoseGraph* sparse_pose_graph_offline();
 
  private:
   const proto::MapBuilderOptions options_;
   common::ThreadPool thread_pool_;
 
   std::unique_ptr<mapping_2d::SparsePoseGraph> sparse_pose_graph_2d_;
+  std::unique_ptr<mapping_2d::SparsePoseGraph> sparse_pose_graph_2d_offline_;
   std::unique_ptr<mapping_3d::SparsePoseGraph> sparse_pose_graph_3d_;
+  std::unique_ptr<mapping_3d::SparsePoseGraph> sparse_pose_graph_3d_offline_;
   mapping::SparsePoseGraph* sparse_pose_graph_;
+  mapping::SparsePoseGraph* sparse_pose_graph_offline_;
 
   sensor::Collator sensor_collator_;
   std::vector<std::unique_ptr<mapping::TrajectoryBuilder>> trajectory_builders_;

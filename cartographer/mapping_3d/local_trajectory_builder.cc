@@ -277,7 +277,15 @@ LocalTrajectoryBuilder::InsertIntoSubmap(
               {},  // 'filtered_point_cloud' is only used in 2D.
               high_resolution_point_cloud,
               low_resolution_point_cloud}),
-      pose_observation, std::move(insertion_submaps)});
+      std::make_shared<const mapping::TrajectoryNode::Data>(
+          mapping::TrajectoryNode::Data{
+              time,
+              sensor::Compress(range_data_in_tracking),
+              gravity_alignment,
+              {},  // 'filtered_point_cloud' is only used in 2D.
+              high_resolution_point_cloud,
+              low_resolution_point_cloud}),
+      pose_observation, std::move(insertion_submaps), 0});
 }
 
 }  // namespace mapping_3d

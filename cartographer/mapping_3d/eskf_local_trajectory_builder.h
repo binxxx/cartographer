@@ -27,8 +27,10 @@ class ESKFLocalTrajectoryBuilder {
  public:
   struct InsertionResult {
     std::shared_ptr<const mapping::TrajectoryNode::Data> constant_data;
+    std::shared_ptr<const mapping::TrajectoryNode::Data> constant_data_mini;
     transform::Rigid3d pose_observation;
     std::vector<std::shared_ptr<const Submap>> insertion_submaps;
+    int num_scans;
   };
   explicit ESKFLocalTrajectoryBuilder(
       const proto::ESKFLocalTrajectoryBuilderOptions& options, 
@@ -39,6 +41,7 @@ class ESKFLocalTrajectoryBuilder {
   ESKFLocalTrajectoryBuilder& operator=(const ESKFLocalTrajectoryBuilder&) = delete;
 
   void AddImuData(const sensor::ImuData& imu_data);
+  //TODO: add InsertionResult content
   std::unique_ptr<InsertionResult> AddRangeData(
       common::Time time, const sensor::RangeData& range_data);
   void AddOdometerData(const sensor::OdometryData& odometry_data);
@@ -49,11 +52,26 @@ class ESKFLocalTrajectoryBuilder {
 
 
  private:
+  //TODO: add InsertionResult content
+  /* Original code version:
   std::unique_ptr<InsertionResult> AddAccumulatedRangeData(
       common::Time time, const sensor::RangeData& range_data_in_tracking);
-
+  */
+  std::unique_ptr<InsertionResult> AddAccumulatedRangeData(
+      common::Time time, const sensor::RangeData& range_data_in_tracking,
+                         const sensor::RangeData& range_data_in_tracking_mini);
+//TODO: add InsertionResult content
+  /*
   std::unique_ptr<InsertionResult> InsertIntoSubmap(
       common::Time time, const sensor::RangeData& range_data_in_tracking,
+      const Eigen::Quaterniond& gravity_alignment,
+      const sensor::PointCloud& high_resolution_point_cloud,
+      const sensor::PointCloud& low_resolution_point_cloud,
+      const transform::Rigid3d& pose_observation);
+  */
+  std::unique_ptr<InsertionResult> InsertIntoSubmap(
+      common::Time time, const sensor::RangeData& range_data_in_tracking,
+                         const sensor::RangeData& range_data_in_tracking_mini,
       const Eigen::Quaterniond& gravity_alignment,
       const sensor::PointCloud& high_resolution_point_cloud,
       const sensor::PointCloud& low_resolution_point_cloud,
